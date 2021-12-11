@@ -30,14 +30,7 @@ Bird UpdateBird(Bird bird)
 
 void RenderBird(Bird bird)
 {
-	for (short i = 0; i < bird.y; ++i)
-	{
-		printf("\n");
-	}
-	for (short i = 0; i < bird.x; ++i)
-	{
-		printf(" ");
-	}
+	printf("\033[%d;%dH", (bird.y), (bird.x));
 	printf("%s\n", bird.birdChar);
 }
 

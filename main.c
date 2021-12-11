@@ -1,9 +1,11 @@
 #include <stdio.h>
 
 #include "Bird.h"
+#include "Wall.h"
 #include "keyboardInput.h"
 
 Bird bird;
+Wall wall;
 
 void cls()
 {
@@ -37,17 +39,20 @@ void update()
 	}
 		cls();
 	bird = bird.update(bird);
+	wall = wall.update(wall);
 }
 
 void render()
 {
 	cls();
 	bird.render(bird);
+	wall.render(wall);
 }
 
 int main()
 {
 	bird = createBird(5, 5, "Bird");
+	wall = createWall(50, 10);
 	while (1)
 	{
 		update();
