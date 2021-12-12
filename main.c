@@ -1,11 +1,18 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <termios.h>
+#include <time.h>
 
 #include "Bird.h"
 #include "Wall.h"
 #include "keyboardInput.h"
 
 Bird bird;
-Wall wall;
+struct Wall walls[10];
+
+struct winsize size;
 
 void cls()
 {
@@ -39,20 +46,70 @@ void update()
 	}
 		cls();
 	bird = bird.update(bird);
-	wall = wall.update(wall);
+	
+	short lastUsed = 0;
+	for (short i = 0; i < 10; ++i)
+	{
+		if (walls[i].x > 0)
+		{
+			walls[i] = walls[i].update(walls[i]);
+			if (i > lastUsed)
+			{
+				lastUsed = i;
+			}
+		}
+		else if (walls[i].x == 0)
+		{
+			for (short j = 0; j < 10; ++j)
+			{
+				if (walls[j].x > walls[lastUsed].x)
+				{
+					lastUsed = j;
+				}
+			}
+			if (walls[lastUsed].x <= 60)
+			{
+				walls[i].x = 80;
+				walls[i].height = rand() % (size.ws_row - 11);
+			}
+		}
+	}
 }
 
 void render()
 {
 	cls();
 	bird.render(bird);
-	wall.render(wall);
+	for (short i = 0; i < 10; ++i)
+	{
+		if (walls[i].x > 0)
+		{
+			walls[i].render(walls[i]);
+		}
+	}
+}
+
+void init()
+{
+	
+	bird = createBird(5, 5, "Bird");
+	
+	walls[0] = createWall(80, rand() % (size.ws_row - 11), size.ws_row);
+
+	for (short i = 1; i < 10; ++i)
+	{
+		walls[i] = createWall(0, rand() % (size.ws_row - 11), size.ws_row);
+	}
+	
 }
 
 int main()
 {
-	bird = createBird(5, 5, "Bird");
-	wall = createWall(50, 10);
+	srand(time(NULL));
+	ioctl( 0, TIOCGWINSZ, (char *) &size );
+
+	init();
+	
 	while (1)
 	{
 		update();

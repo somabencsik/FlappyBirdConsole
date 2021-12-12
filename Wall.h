@@ -4,8 +4,9 @@
 typedef struct Wall Wall;
 struct Wall
 {
-	int x;
-	int height;
+	short x;
+	short height;
+	short maxHeight;
 
 	Wall (*update)(Wall);
 	void (*render)(Wall);
@@ -15,8 +16,13 @@ void WallRender(Wall wall)
 {
 	for (short y = 0; y < wall.height; ++y)
 	{
-		printf("\033[%d;%dH", (y), (wall.x-10));
-		printf("P\n");
+		printf("\033[%d;%dH", (y), (wall.x));
+		printf("X\n");
+	}
+	for (short y = wall.height + 10; y < wall.maxHeight; ++y)
+	{
+		printf("\033[%d;%dH", (y), (wall.x));
+   		printf("X\n");
 	}
 }
 
@@ -26,9 +32,9 @@ Wall WallUpdate(Wall wall)
 	return wall;
 }
 
-Wall createWall(int x, int height)
+Wall createWall(short x, short height, short terminalSize)
 {
-	Wall result = {x, height};
+	Wall result = {x, height, terminalSize};
 
 	result.update = WallUpdate;
 	result.render = WallRender;
