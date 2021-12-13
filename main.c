@@ -50,6 +50,7 @@ void update()
 	short lastUsed = 0;
 	for (short i = 0; i < 10; ++i)
 	{
+		// Check for generation
 		if (walls[i].x > 0)
 		{
 			walls[i] = walls[i].update(walls[i]);
@@ -72,6 +73,16 @@ void update()
 				walls[i].x = 80;
 				walls[i].height = rand() % (size.ws_row - 11);
 			}
+		}
+
+		// Check for colliding with bird
+		if ((walls[i].x >= bird.x && walls[i].x <= bird.x + 4) &&
+			((bird.y >= 0 && bird.y <= walls[i].height - 1) ||
+			 (bird.y >= walls[i].height + 9 && bird.y <= walls[i].height + 9 + size.ws_row)))
+		{
+			cls();
+			printf("You died, you noob...");
+			exit(0);
 		}
 	}
 }
